@@ -24,8 +24,9 @@ Arrow keys rotate view
 space reset view
 ESC quit
 
-1, 2 some cool lorenz views
+1, 2, 3 some cool lorenz views
 
+most effective to just hold them down rather than press
 s increment s parameter
 S decrement s parameter
 b increment b parameter

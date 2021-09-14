@@ -6,11 +6,12 @@
 * Arrow keys rotate view
 * space resets view
 * l changes between the four line modes
+* ESC quits the program
+* 1, 2, 3 some cool Lorenz parameters
+* hold down these to increase/decrease faster
 * s increments s value S decrements
 * b increments b value B decrements
 * r increments r value R decrements
-* ESC quits the program
-* 1, 2 some cool Lorenz parameters
 */
 // a lot of imports
 #include <stdio.h>
@@ -233,7 +234,7 @@ void display() {
 	glWindowPos2i(5, 65);
 	Print("View Angle=%d, %d\n", th, ph);
 	glWindowPos2i(5, 45);
-	Print("Cool things: 1, 2");
+	Print("Cool things: 1, 2, 3");
 	glWindowPos2i(5, 25);
 	Print("Change parameters: s, b, r, S, B, R, l, space\n");
 	glWindowPos2i(5, 5);
@@ -340,6 +341,13 @@ void key(unsigned char ch, int x, int y) {
 		reset = 1;
 		th = 135;
 		ph = 15;
+	} else if(ch == '3') {
+		s = -2;
+		b = 34;
+		r = 5.5;
+		reset = 1;
+		th = 0;
+		ph = 10;
 	}
 	// reset all of our traveling objects
 	if(reset) {
