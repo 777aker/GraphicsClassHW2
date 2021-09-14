@@ -10,6 +10,7 @@
 * b increments b value B decrements
 * r increments r value R decrements
 * ESC quits the program
+* 1, 2 some cool Lorenz parameters
 */
 // a lot of imports
 #include <stdio.h>
@@ -163,7 +164,9 @@ void display() {
 		// switch based off the line mode we are in
 		// wait, a switch would've been better here.....oops
 		// eh, no one ever cares about repeated code
+		// note: draws no lines on lines == 0
 		if(lines == 1) {
+			// draw some lines to the origin and color based on distance to origin
 			glBegin(GL_LINES);
 			double distance = pow(pow(positions[i].x, 2) + pow(positions[i].y, 2) + pow(positions[i].z, 2), .5);
 			distance /= dim/2;
@@ -172,6 +175,7 @@ void display() {
 			glVertex3d(positions[i].x, positions[i].y, positions[i].z);
 			glEnd();
 		} else if(lines == 2) {
+			// draw some lines to each other
 			if(i != 0) {
 				glBegin(GL_LINES);
 				double distance = pow(pow(positions[i].x, 2) + pow(positions[i].y, 2) + pow(positions[i].z, 2), .5);
@@ -182,6 +186,8 @@ void display() {
 				glEnd();
 			}
 		} else if(lines == 3) {
+			// draw lines to the origin and each other
+			// also color lines based on distance to origin
 			if(i != 0) {
 				glBegin(GL_LINE_STRIP);
 				double distance = pow(pow(positions[i].x, 2) + pow(positions[i].y, 2) + pow(positions[i].z, 2), .5);
@@ -205,7 +211,7 @@ void display() {
 	//position = lorenzret(position);
 	//glVertex3d(position.x, position.y, position.z);
 	
-
+	// ripped code from ex6
 	//  Draw axes in white
 	glColor3f(1,1,1);
 	glBegin(GL_LINES);
@@ -224,10 +230,12 @@ void display() {
 	glRasterPos3d(0,0,48);
 	Print("Z");
 	// display parameters
-	glWindowPos2i(5, 45);
+	glWindowPos2i(5, 65);
 	Print("View Angle=%d, %d\n", th, ph);
+	glWindowPos2i(5, 45);
+	Print("Cool things: 1, 2");
 	glWindowPos2i(5, 25);
-	Print("Reset view 0\n");
+	Print("Change parameters: s, b, r, S, B, R, l, space\n");
 	glWindowPos2i(5, 5);
 	Print("s = %f, b = %f, r = %f\n", s, b, r);
 	//printf("%f %f %f", s, b, r);
@@ -245,7 +253,7 @@ void lorenz() {
 	double x = 1;
 	double y = 1;
 	double z = 1;
-	// time step
+	// time step is now global
 	//double dt = 0.001;
 
 	// for finding the maximum z so we can reframe
@@ -254,11 +262,14 @@ void lorenz() {
 
 	//glColor3f(0, 0, 1);
 	//glPointSize(10);
+	// draw the lorenz attractor
 	glBegin(GL_LINE_STRIP);
 	for(i=0; i<50000; i++) {
+		// parameters are global
 		double dx = s*(y-x);
 		double dy = x*(r-z)-y;
 		double dz = x*y - b*z;
+		// also color based on change in position
 		double distance = pow(pow(dx, 2) + pow(dy, 2) + pow(dz, 2), .5);
 		glColor3f(distance/greatest, 0, 1);
 		//if(distance > greatest)
@@ -275,13 +286,15 @@ void lorenz() {
 	//printf("%f\n", greatest);
 }
 
+// this function handles a lot of input
 void key(unsigned char ch, int x, int y) {
 	// do we need to reset our positions?
 	bool reset = 0;
 	// exit on ESC
 	if(ch == 27)
 		exit(0);
-	// reset view angle
+	// change the lorenz paramters and reset our men
+	// to go along the new lorenz
 	else if(ch == 's') {
 		s += 2;
 		reset = 1;
@@ -300,6 +313,7 @@ void key(unsigned char ch, int x, int y) {
 	} else if(ch == 'R') {
 		r -= 1.5;
 		reset = 1;
+	// reset to the original paramters
 	} else if(ch == ' ') {
 		s = 78;
 		b = 2.6666;
@@ -308,10 +322,26 @@ void key(unsigned char ch, int x, int y) {
 		th = 45;
 		ph = 45;
 		lines = 3;
+	// which line mode we in
 	} else if(ch == 'l') {
 		lines++;
 		lines %= 4;
+	} else if(ch == '1') {
+		s = -2;
+		b = 2.6666;
+		r = 28;
+		reset = 1;
+		th = 15;
+		ph = 10;
+	} else if(ch == '2') {
+		s = 12;
+		b = 6.1666;
+		r = 32.5;
+		reset = 1;
+		th = 135;
+		ph = 15;
 	}
+	// reset all of our traveling objects
 	if(reset) {
 		int i;
 		drawn = 0;
@@ -365,7 +395,8 @@ int main(int argc,char* argv[]) {
    if (glewInit()!=GLEW_OK) Fatal("Error initializing GLEW\n");
 #endif
    // depth test and face cull since we doing some 3D stuff
-   // and I want it to show up well
+   // and I want it to show up well, I tried making display
+   // mode GLUT_DEPTH or whatever but it broke so moved on
    glEnable(GL_CULL_FACE);
    glEnable(GL_DEPTH_TEST);
    //  Tell GLUT to call "display" when the scene should be drawn
@@ -383,6 +414,7 @@ int main(int argc,char* argv[]) {
 }
 
 // drawing a 3D object of some sort
+// it's a...double rectangular prism?
 void object(struct point pos) {
    glPushMatrix();
    
@@ -392,6 +424,7 @@ void object(struct point pos) {
 
    glTranslated(pos.x, pos.y, pos.z);
 
+   // this took me way too long to figure out
    double xang = atan(pos.dy/pos.dz);
    xang *= 180/M_PI;
    glRotatef(-xang, 1, 0, 0);
@@ -410,8 +443,8 @@ void object(struct point pos) {
       glRotatef(yang, 0, 1, 0);
    }
 
-   // ok, to rotate it take the vector
-   // and make it a unit vector
+   // I also tried lots of homegeneous coordinate stuff
+   // it never really worked out
    /*
    double magnitude = (dx**2 + dy**2 + dz**2)**.5;
    double matrix[] = {
@@ -434,6 +467,8 @@ void object(struct point pos) {
    glVertex3d(0, .5, -.5);
    glEnd();
    */
+
+   // draw our cool object (each face is a different color...uuuwwww)
 
    glColor3f(.75, 0, .75);
    glBegin(GL_TRIANGLES);
@@ -494,6 +529,9 @@ void object(struct point pos) {
    glPopMatrix();
 }
 
+// these are all the boring functions stolen
+// from ex6 that just fix stuff and do
+// convenience stuff (super helpful, but boring)
 void reshape(int width, int height) {
 	//  Set the viewport to the entire window
    glViewport(0,0, RES*width,RES*height);

@@ -1,15 +1,17 @@
 /*
- *  Visibility
- *
- *  Demonstrate hidden surface algorithms using cuboids.
- *
+ *  This is the visibility example ripped
+ * and changed to suit testing needs
+ * It really was just me figuring out how
+ * to draw a 3D object and rotate it to point 
+ * a certain direction 
+ * 
  *  Key bindings:
- *  m/M    Cycle hidden surface modes
- *  n/N    Cycle number of cubes
- *  r/R    Reverse directon on magenta face
- *  a      Toggle axes
  *  arrows Change view angle
- *  0      Reset view angle
+ * added these key bindings for testing to make sure at any position
+ * it was facing the right direction
+ *  x X y Y z Z change the position of the object
+ * uh....if any of the other keys do something oops
+ * poorly maintained and managed bc purely for testing
  *  ESC    Exit
  */
 #include <stdio.h>
